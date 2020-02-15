@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1579893133 source:/home/richard/Documents/2020SP/CSCI173/lab1/main.cpp
+	<string.h>
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<iostream>
+	<math.h>
+

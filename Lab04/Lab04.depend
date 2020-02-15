@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1581709245 source:/home/richard/Documents/2020SP/CSCI173/Lab04/main.cpp
+	<GL/freeglut_std.h>
+	<GL/gl.h>
+	<cmath>
+	<string.h>
+	<GLUT/glut.h>
+	<GL/glut.h>
+	<stdlib.h>
+	<iostream>
+	<math.h>
+
