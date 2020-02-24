@@ -41,8 +41,8 @@ GLuint tex;
 const float slices = 100.0;
 
 /*      BALL VARIABLES          */
-float curr_x = 0; float curr_y = 0; float curr_z = 0;
-float old_x = 0; float old_y = 0; float old_z = 0;    
+float curr_x = 0; float curr_y = 0; float curr_z = 0;  //Pos of the ball
+float old_x = 0; float old_y = 0; float old_z = 0; //Pos at click or bounce
 float mx = 0; float my = 0; float mz = 0;       // Where ball should move to
 float sphere_radius = 0.5;
 float t = 0;
@@ -135,22 +135,22 @@ static void display(void)
     glBindTexture(GL_TEXTURE_2D, tex);
     glBegin(GL_QUADS);
     glNormal3f(0.0f, -1.0f, 0.0f);
-    glTexCoord2f(0.25f, 0.33f); glVertex3f(1.0f, 1.0f, -1.0f);
-    glTexCoord2f(0.25f, 0.0f); glVertex3f(1.0f, 1.0f, 1.0f);
-    glTexCoord2f(0.50f, 0.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
-    glTexCoord2f(0.50f, 0.33f); glVertex3f(-1.0f, 1.0f, -1.0f);
+    glTexCoord2f(0.50f, 0.0f); glVertex3f(1.0f, 1.0f, -1.0f);
+    glTexCoord2f(0.50f, 0.33f); glVertex3f(1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.25f, 0.33f); glVertex3f(-1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.25f, 0.0f); glVertex3f(-1.0f, 1.0f, -1.0f);
     glEnd();
 
-    /*  NOT CORRECT? */
     //Draw the bottom face Z
     // Order: TR -> TL -> BL -> BR
+    // ORDER: 
     glBindTexture(GL_TEXTURE_2D, tex);
     glBegin(GL_QUADS);
     glNormal3f(0.0f, 1.0f, 0.0f);
-    glTexCoord2f(0.50f, 0.66f); glVertex3f(-1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.25f, 0.66f); glVertex3f(1.0f, -1.0f, 1.0f);
-    glTexCoord2f(0.25f, 1.0f); glVertex3f(1.0f, -1.0f, -1.0f);
-    glTexCoord2f(0.50f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.25f, 0.66f); glVertex3f(-1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.50f, 0.66f); glVertex3f(1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.50f, 1.0f); glVertex3f(1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.25f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
     glEnd();
 
 
@@ -251,7 +251,7 @@ static void idle(void)
     t   += 1;
 
     // calculate the length of each slice - the distance the ball will 
-    // travel each frame
+    // travel each frame?
     delta_x = (mx - old_x)/slices;
     delta_y = (my - old_y)/slices;
     delta_z = (mz - old_z)/slices;
@@ -261,12 +261,10 @@ static void idle(void)
     curr_x = old_x + delta_x * t;
     curr_y = old_y + delta_y * t;
     curr_z = old_z + delta_z * t;
-    
 
     if(curr_y >= MAX_Y){
         curr_y = MAX_Y;
         t = 0;
-        //tx = ty = tz = 0;
 
         my = old_y;
         mx = 2 * (curr_x - old_x);
@@ -278,7 +276,6 @@ static void idle(void)
     }else if(curr_y <= MIN_Y){
         curr_y = MIN_Y;
         t = 0;
-        //tx = ty = tz = 0;
 
         my = old_y;
         mx = 2 * (curr_x - old_x);
@@ -290,7 +287,6 @@ static void idle(void)
     }else if(curr_x >= MAX_X){
         curr_x = MAX_X;
         t = 0;
-        //tx = ty = tz = 0;
 
         my = 2 * (curr_y - old_y);
         mx = old_x;
@@ -302,7 +298,6 @@ static void idle(void)
     }else if(curr_x <= MIN_X){
         curr_x = MIN_X;
         t = 0;
-        //tx = ty = tz = 0;
 
         my = 2 * (curr_y - old_y);
         mx = old_x;
@@ -315,7 +310,6 @@ static void idle(void)
     else if(curr_z >= MAX_Z){
         curr_z = MAX_Z;
         t = 0;
-        //tx = ty = tz = 0;
 
         mx = 2 * (curr_x - old_x);
         my = 2 * (curr_y - old_y);
@@ -329,7 +323,6 @@ static void idle(void)
     else if(curr_z <= MIN_Z){
         curr_z = MIN_Z;
         t = 0;
-        //tx = ty = tz = 0;
 
         mx = 2 * (curr_x - old_x);
         my = 2 * (curr_y - old_y);
@@ -365,9 +358,6 @@ void mouse(int btn, int state, int x, int y){
         if(state==GLUT_DOWN){
 
                 t = 0;
-                delta_x = 0;
-                delta_y = 0;
-                delta_z = 0;
 
                 // save the ball position before update of new direction
                 old_x = curr_x; 
@@ -444,7 +434,7 @@ float generate_z_val(){
     float temp = 0;
     int sign = rand();
 
-    temp = (float) (rand() % 301)/100.0;      //value between 0-3;
+    temp = (float) ( rand() % (MAX_Z * 1000 + 1) )/100.0; //val 0-18
 
     //random chance the z value will be positive or negative each click
     if(sign % 2 != 0){
@@ -485,3 +475,83 @@ int main(int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
+
+
+
+
+/* 
+    // Order of tex cords: TL -> TR -> BR -> BL
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 0.0f, -1.0f);
+    glTexCoord2f(0.25f, 0.33f); glVertex3f(-1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.50f, 0.33f); glVertex3f(1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.50f, 0.66f); glVertex3f(1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.25f, 0.66f); glVertex3f(-1.0f, -1.0f, 1.0f);
+    glEnd();
+
+    //Draw the backface
+    // Order: TR -> BR -> BL -> TL
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glTexCoord2f(1.0f, 0.33f); glVertex3f(-1.0f, 1.0f, -1.0f);
+    glTexCoord2f(1.0f, 0.66f); glVertex3f(-1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.75f, 0.66f); glVertex3f(1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.75f, 0.33f); glVertex3f(1.0f, 1.0f, -1.0f);
+    glEnd();
+
+
+
+
+**************************************************************************
+
+    //Draw the top face
+    // Order: BL -> TL -> TR -> BR
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, -1.0f, 0.0f);
+    glTexCoord2f(0.25f, 0.33f); glVertex3f(1.0f, 1.0f, -1.0f);
+    glTexCoord2f(0.25f, 0.0f); glVertex3f(1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.50f, 0.0f); glVertex3f(-1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.50f, 0.33f); glVertex3f(-1.0f, 1.0f, -1.0f);
+    glEnd();
+
+      NOT CORRECT? 
+    //Draw the bottom face Z
+    // Order: TR -> TL -> BL -> BR
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBegin(GL_QUADS);
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glTexCoord2f(0.50f, 0.66f); glVertex3f(-1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.25f, 0.66f); glVertex3f(1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.25f, 1.0f); glVertex3f(1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.50f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+    glEnd();
+
+
+**************************************************************************
+
+
+    //Right Face Y
+    // Order: TR -> BR -> BL -> TL
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBegin(GL_QUADS);
+    glNormal3f(-1.0f, 0.0f, 0.0f);
+    glTexCoord2f(0.75f, 0.33f); glVertex3f(1.0f, 1.0f, -1.0f);
+    glTexCoord2f(0.75f, 0.66f); glVertex3f(1.0f, -1.0f, -1.0f);
+    glTexCoord2f(0.50f, 0.66f); glVertex3f(1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.50f, 0.33f); glVertex3f(1.0f, 1.0f, 1.0f);
+    glEnd();
+
+    //Left Face Y
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBegin(GL_QUADS);
+    glNormal3f(1.0f, 0.0f, 0.0f);
+    glTexCoord2f(0.0f, 0.33f); glVertex3f(-1.0f, 1.0f, -1.0f);
+    glTexCoord2f(0.25f, 0.33f); glVertex3f(-1.0f, 1.0f, 1.0f);
+    glTexCoord2f(0.25f, 0.66f); glVertex3f(-1.0f, -1.0f, 1.0f);
+    glTexCoord2f(0.0f, 0.66f); glVertex3f(-1.0f, -1.0f, -1.0f);
+    glEnd();
+    glPopMatrix();
+*/
